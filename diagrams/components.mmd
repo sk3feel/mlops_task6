@@ -1,0 +1,28 @@
+---
+title: "C4 Components: сервис модели"
+---
+flowchart LR
+  INPUT["Признаки от<br/>сервиса решений"]
+  OUTPUT["В сервис решений:<br/>риск и версия<br/>или ошибка"]
+  MODEL_SOURCE["Реестр моделей:<br/>утверждённая версия"]
+  subgraph MODEL["Сервис модели"]
+    API["Приём запроса<br/>FastAPI"]
+    VALIDATE["Проверка признаков<br/>Python"]
+    LOAD["Загрузка<br/>утверждённой модели<br/>MLflow"]
+    PREDICT["Расчёт риска<br/>CatBoost"]
+    RESPONSE["Подготовка ответа<br/>Python"]
+    API -->|Признаки| VALIDATE
+    VALIDATE -->|Проверенные<br/>данные| PREDICT
+    LOAD -->|Модель и версия| PREDICT
+    PREDICT -->|Риск и версия<br/>или ошибка| RESPONSE
+    VALIDATE -->|Ошибка данных| RESPONSE
+    LOAD -->|Нет утверждённой<br/>модели| RESPONSE
+  end
+  INPUT --> API
+  RESPONSE --> OUTPUT
+  LOAD -->|Запрос версии| MODEL_SOURCE
+  MODEL_SOURCE -->|Модель и версия| LOAD
+  classDef plain fill:#fff,stroke:#222,stroke-width:1px,color:#111;
+  classDef boundary fill:none,stroke:none,color:#111;
+  class API,VALIDATE,LOAD,PREDICT,RESPONSE plain;
+  class INPUT,OUTPUT,MODEL_SOURCE boundary;

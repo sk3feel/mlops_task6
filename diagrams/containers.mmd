@@ -1,0 +1,27 @@
+---
+title: "C4 Containers: состав системы"
+config:
+  layout: elk
+---
+flowchart LR
+  ACCESS["Сервис доступа Claude"]
+  EMPLOYEE["Специалист по проверке"]
+  subgraph SYSTEM["Система проверки доступа"]
+    DECISION["Сервис решений<br/>Готовит признаки<br/>FastAPI"]
+    MODEL["Сервис модели<br/>Python, CatBoost"]
+    DB["Хранилище истории<br/>проверок и разметки<br/>PostgreSQL"]
+    TRAIN["Сервис обучения модели<br/>Python, CatBoost"]
+    REGISTRY["Реестр моделей<br/>MLflow"]
+    DECISION -->|Признаки| MODEL
+    MODEL -->|Риск и версия<br/>или ошибка| DECISION
+    DECISION -->|Чтение истории,<br/>запись результатов| DB
+    TRAIN -->|Чтение признаков<br/>и разметки| DB
+    TRAIN -->|Публикация новой модели| REGISTRY
+    REGISTRY -->|Утверждённая модель<br/>и версия| MODEL
+  end
+  ACCESS -->|Данные входа| DECISION
+  DECISION -->|Решение о доступе| ACCESS
+  EMPLOYEE -->|Результат проверки| DECISION
+  DECISION -->|Административный<br/>интерфейс| EMPLOYEE
+  classDef plain fill:#fff,stroke:#222,stroke-width:1px,color:#111;
+  class ACCESS,EMPLOYEE,DECISION,MODEL,DB,TRAIN,REGISTRY plain;

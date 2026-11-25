@@ -1,0 +1,30 @@
+---
+title: "BPMN: проверка доступа к Claude"
+---
+flowchart LR
+  subgraph USER["Пользователь"]
+    U1("Запросить доступ") --> U2("Получить решение")
+  end
+  subgraph SYSTEM["Система проверки доступа"]
+    subgraph AUTO["Автоматическая проверка"]
+      S0((" ")) --> REQUEST("Вызвать модель")
+      REQUEST --> RESULT{"Уровень<br/>риска?"}
+      RESULT -->|Риск ниже 20%| ALLOW("Разрешить доступ")
+      RESULT -->|Риск от 90%| BLOCK("Ограничить доступ")
+      ALLOW --> SEND("Сообщить решение")
+      BLOCK --> SEND
+      SEND --> SAVE("Сохранить результат<br/>проверки")
+      SAVE --> END((" "))
+    end
+    subgraph HUMAN["Специалист по проверке"]
+      REVIEW("Проверить случай<br/>и принять решение")
+    end
+    RESULT -->|Средний риск<br/>или сбой| REVIEW
+    REVIEW --> SEND
+  end
+  U1 -.->|Запрос| S0
+  SEND -.->|Решение| U2
+  classDef plain fill:#fff,stroke:#222,stroke-width:1px,color:#111;
+  classDef finish fill:#fff,stroke:#222,stroke-width:3px,color:#111;
+  class U1,U2,REQUEST,RESULT,ALLOW,BLOCK,SEND,SAVE,REVIEW,S0 plain;
+  class END finish;

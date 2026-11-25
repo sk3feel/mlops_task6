@@ -1,0 +1,17 @@
+---
+title: "C4 Context: окружение системы"
+---
+flowchart LR
+  USER["Пользователь"]
+  ACCESS["Сервис доступа Claude"]
+  SYSTEM["Система проверки доступа"]
+  EMPLOYEE["Специалист по проверке"]
+  USER -->|Запрос доступа| ACCESS
+  ACCESS -->|Данные текущего входа| SYSTEM
+  SYSTEM -->|Решение о доступе| ACCESS
+  ACCESS -->|Решение о доступе| USER
+  SYSTEM -->|Случай для ручной проверки| EMPLOYEE
+  EMPLOYEE -->|Результат проверки| SYSTEM
+  classDef plain fill:#fff,stroke:#222,stroke-width:1px,color:#111;
+  class USER,ACCESS,SYSTEM,EMPLOYEE plain;
+  style SYSTEM fill:#edf3fa,stroke:#222,color:#111;
